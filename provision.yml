@@ -1,15 +1,51 @@
 ---
 
+# provision
+
 - hosts: all
   become: yes
+  tags: provision
   tasks:
     - apt: update_cache=yes
     - apt: name=apache2
-    - apt: name=php5
     - apt: name=mysql-server
     - apt: name=python-mysqldb
+    - apt: name=php5
+    - apt: name=php5-mysql
     - apt: name=zip
     - mysql_user: name=wordpress password=wordpress priv=*.*:ALL login_user=root
     - mysql_db: name=wordpress login_user=root
-    - get_url: url=https://de.wordpress.org/latest-de_DE.zip dest=/var/www/html
-    - unarchive: src=/var/www/html/wordpress-4.5.3-de_DE.zip dest=/var/www/html/ copy=no
+    - service: name=apache2 state=restarted enabled=yes
+    - service: name=mysql state=started enabled=yes
+    - file: path=/var/www/html state=directory owner=www-data group=www-data
+
+# install wordpress
+
+- hosts: all
+  become: yes
+  become_user: www-data
+  tags: deployment
+  tasks:
+    - name: create temporarily directory for download file
+      file: path=/tmp/wbjsjnjptdomwniw state=directory
+    - name: download latest wordpress package
+      get_url: url=https://de.wordpress.org/latest-de_DE.zip dest=/tmp/wbjsjnjptdomwniw
+    - name: check for file name
+      shell: ls /tmp/wbjsjnjptdomwniw | grep .zip
+      register: file_name
+    - name: unzip downloaded package
+      unarchive: src=/tmp/wbjsjnjptdomwniw/{{ item }} dest=/tmp/wbjsjnjptdomwniw copy=no
+      with_items:
+        - "{{ file_name.stdout_lines }}"
+    - name: copy wordpress files to application directory
+      shell: cp -a /tmp/wbjsjnjptdomwniw/wordpress/. /var/www/html/
+    - name: delete default index.html
+      file: path=/var/www/html/index.html state=absent
+    - name: cleanup
+      file: path=/tmp/wbjsjnjptdomwniw state=absent
+    - name: check if wordpress-configuration exists
+      stat: path=/var/www/html/wp-config.php
+      register: wp_config
+    - name: copy sample config
+      shell: cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+      when: not wp_config.stat.exists

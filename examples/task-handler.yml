@@ -1,0 +1,19 @@
+---
+- hosts: all
+  tasks:
+    - name: write php config for apache
+      ini_file: dest=/etc/php5/apache2/php.ini
+                section={{ item.section }}
+                option={{ item.option }}
+                value={{ item.value }}
+      with_items:
+        - section: Date
+          option: date.timezone
+          value: Europe/Berlin
+        - section: PHP
+          option: memory_limit
+          value: 512M
+      notify: reload apache
+  handlers:
+    - name: reload apache
+      service: name=apache2 state=reloaded

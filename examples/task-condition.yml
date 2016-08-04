@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: fail if not running on ubuntu
+      fail: msg="Run this playbook only on Ubuntu remotes"
+      when: ansible_distribution != "Ubuntu"

@@ -1,0 +1,7 @@
+playbook.yml
+ansible-roles/
+   lamp/
+     tasks/
+       main.yml
+     handlers/
+       main.yml

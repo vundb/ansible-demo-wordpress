@@ -1,0 +1,15 @@
+---
+
+- hosts: loadbalancer
+  roles:
+    - role: nginx
+
+- hosts: application
+  roles:
+    - role: apache
+    - role: php
+    - role: wordpress
+
+- hosts: database
+  roles:
+    - role: mysql

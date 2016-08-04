@@ -1,4 +1,0 @@
----
-
-- apt: name=apache update_cache=yes
-  become: yes

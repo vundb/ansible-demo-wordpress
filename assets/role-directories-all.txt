@@ -1,0 +1,10 @@
+playbook.yml
+ansible-roles/
+   lamp/
+     files/
+     templates/
+     tasks/
+     handlers/
+     vars/
+     defaults/
+     meta/

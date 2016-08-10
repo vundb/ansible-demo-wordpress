@@ -1,0 +1,12 @@
+# ansible-roles/lamp/vars/main.yml
+general_packages:
+    - apache2
+    - php5
+    - mysql-server
+general_config:
+    - section: Date
+      option: date.timezone
+      value: Europe/Berlin
+    - section: PHP
+      option: memory_limit
+      value: 512M

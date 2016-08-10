@@ -3,6 +3,6 @@
   roles:
     - role: lamp
       config:
-        - section: php
+        - section: PHP
           option: max_execution_time
           value: 300
